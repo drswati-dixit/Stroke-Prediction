@@ -1,0 +1,103 @@
+---
+title: "Project"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(readr)
+stroke_data <- read_csv("healthcare-dataset-stroke-data (1).csv")
+```
+```{r}
+head(stroke_data)
+```
+```{r}
+summary(stroke_data)
+```
+```{r}
+library(tidyverse) # metapackage of all tidyverse packages
+library(psych)
+library(dplyr)
+library(GGally)
+```
+```{r}
+###bmi conversion
+stroke_data$bmi = ifelse(stroke_data$bmi == 'N/A', NA, stroke_data$bmi)
+stroke_data$bmi = as.numeric(stroke_data$bmi)
+stroke_data$bmi
+summary(stroke_data)
+```
+```{r}
+str(stroke_data)
+```
+
+
+```{r}
+library(magrittr)
+library(dplyr)
+```
+
+
+```{r}
+aggregate(bmi ~ work_type, stroke_data, var)
+```
+```{r}
+aggregate(bmi ~ work_type, stroke_data, sd)
+```
+```{r}
+boxplot(stroke_data$bmi)
+###The outliers are present in the plot, but analysis can be done as calculated sd value is approximately 7.0 which can be accepted
+```
+```{r}
+###Correlation between avg_glucose_level and bmi
+
+cor(stroke_data$avg_glucose_level,stroke_data$bmi, use="pairwise.complete.obs", method="pearson")
+plot(stroke_data$avg_glucose_level, stroke_data$bmi)
+abline(lm(stroke_data$bmi ~ stroke_data$avg_glucose_level), col = "yellow")
+```
+```{r}
+###Gender wise Distribution
+stroke_occured <- stroke_data[stroke_data$stroke == 1, ]
+round(prop.table(table(stroke_occured$gender))*100,2)
+
+###Smoking status wise distriution
+round(prop.table(table(stroke_occured$smoking_status))*100,2)
+
+###Work type wise distriution
+round(prop.table(table(stroke_occured$work_type))*100,2)
+
+###work_type and smoking_status wise prevalence of stroke
+xtabs(stroke_data$stroke ~ stroke_data$work_type + stroke_data$smoking_status, stroke_data)
+plot(xtabs(stroke_data$stroke ~ stroke_data$work_type + stroke_data$smoking_status, stroke_data))
+
+###The results demonstrates that the highest prevalence of strokes is in the "Private" category of variable work_type with "never smoked" smoking_status.
+```
+```{r}
+###work_type and smoking_status wise prevalence of hypertension
+xtabs(stroke_data$hypertension ~ stroke_data$work_type+stroke_data$smoking_status, stroke_data)
+
+plot(xtabs(stroke_data$hypertension ~ stroke_data$work_type+stroke_data$smoking_status, stroke_data))
+###The results demonstrates that the highest prevalence of hypertension was also is in the "Private" category of variable work_type with "never smoked" smoking_status.
+```
+```{r}
+###work_type and smoking_status wise prevalence of heart disease
+xtabs(stroke_data$heart_disease ~ stroke_data$work_type+stroke_data$smoking_status, stroke_data)
+
+plot(xtabs(stroke_data$heart_disease ~ stroke_data$work_type+stroke_data$smoking_status, stroke_data))
+###The results demonstrates that the highest prevalence of hypertension was also is in the "Private" category of variable work_type with "never smoked" smoking_status.
+```
+```{r}
+###mean age of stroke occurence
+mean(stroke_occured$age)
+```
